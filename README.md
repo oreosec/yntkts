@@ -2,7 +2,9 @@
 
 ### Init
 
-if you're using yarn `cd client && yarn`
+if you're using yarn
+
+`cd client && yarn`
 
 `cd server && yarn`
 
