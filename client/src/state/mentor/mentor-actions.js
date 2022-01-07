@@ -41,6 +41,8 @@ export const fetchMentor = (identifier, query) => {
                 const { data } = response.data;
                 dispatch({ type: GET_MENTOR_SUCCESS, payload: data.disciples });
             })
-            .catch((err) => console.log(err));
+            .catch((err) =>
+                dispatch({ type: GET_MENTOR_FAILURE, payload: err.message })
+            );
     };
 };

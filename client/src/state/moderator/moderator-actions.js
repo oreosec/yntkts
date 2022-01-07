@@ -26,7 +26,6 @@ export const fetchModerator = (identifier, query) => {
             .catch(() => {
                 dispatch({
                     type: GET_MODERATOR_FAILURE,
-                    payload: true,
                 });
             });
     };

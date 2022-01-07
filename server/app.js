@@ -66,7 +66,7 @@ const discipleRouter = require("./routes/disciple");
 const base = "/api/v1";
 
 app.use("*", (req, res, next) => {
-    console.log(req.session);
+    console.log({ token: req.session.token });
     console.log(req.sessionID);
     next();
 });

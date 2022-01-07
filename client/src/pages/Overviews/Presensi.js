@@ -26,20 +26,25 @@ function Presensi() {
     // this is one of problems that make my head "mumet"
     useEffect(() => {
         if (condition) {
-            // const current = condition && objRole.data
+            //
+            // const current = objRole.data.filter((data) => data);
+
+            const current = objRole.data.map(({ _id, presences }) => ({
+                presences: presences.map(
+                    ({ date, status }) => `${_id} ${date} ${status}` // this wont detect because calendar.getHours() is not at the same time
+                ),
+            }));
+
+            const p = current.map(({ presences }) => presences);
+            console.log(p);
+
             // setPresences(() => {
-            //     let newState = [];
-            //     for (let i = 0; i < objRole.data.length; i++) {
-            //         newState.push({
-            //             date: calendar,
-            //             status: "",
-            //             description: "",
-            //         });
-            //     }
+            //     const p = current.map(() =>  )
+
             //     return newState;
             // });
         }
-    }, [condition, calendar, objRole.data.length]);
+    }, [condition, calendar, objRole.data]);
 
     return (
         <Layout>

@@ -40,7 +40,7 @@ function Dashboard() {
     const { auth } = useSelector((state) => state);
     const { username, _id: mentor_id } = auth.as;
     const dispatch = useDispatch();
-    const roleCtx = useContext(RoleContext);
+    const { formatedRole, objRole } = useContext(RoleContext);
 
     // sweetalert handler
     const [sweetMsg, setSweetMsg] = useState("");
@@ -69,12 +69,12 @@ function Dashboard() {
                         as
                         <span className="italic ml-2">
                             {username} {""}
-                            {`(${roleCtx.formatedRole})`}
+                            {`(${formatedRole})`}
                         </span>
                     </span>
                 </header>
 
-                {roleCtx.formatedRole === "Pengampu" && (
+                {formatedRole === "Pengampu" && (
                     <section className="mt-10 flex flex-col space-y-2 w-60">
                         <ButtonIcon
                             className="btn btn-primary justify-between"
@@ -107,7 +107,7 @@ function Dashboard() {
                             <div className="space-y-2">
                                 {
                                     //
-                                    moderators.length > 0 &&
+                                    moderators.length > 0 ? (
                                         moderators.map(
                                             ({ username, _id, mentors }) => (
                                                 <Card
@@ -130,6 +130,11 @@ function Dashboard() {
                                                 </Card>
                                             )
                                         )
+                                    ) : (
+                                        <p className="font-bold text-center text-trueGray-800 opacity-80">
+                                            Koordinator tidak ditemukan.
+                                        </p>
+                                    )
                                 }
                             </div>
                         </Card>
@@ -259,15 +264,15 @@ function Dashboard() {
                 <main className="mt-10">
                     <Calendar date={calendar} setter={setCalendar} />
 
-                    <Preload isLoading={roleCtx.objRole.isLoading} />
+                    <Preload isLoading={objRole.isLoading} />
 
-                    {!roleCtx.objRole.isLoading &&
-                    !roleCtx.objRole.isError &&
-                    roleCtx.objRole.data.length >= 1 ? (
+                    {!objRole.isLoading &&
+                    !objRole.isError &&
+                    objRole.data.length >= 1 ? (
                         <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                             {
                                 //
-                                roleCtx.objRole.data.map(
+                                objRole.data.map(
                                     ({ _id, username, presences }) => (
                                         <Card
                                             key={_id}
