@@ -82,6 +82,7 @@ function Presensi() {
                                         <option value="hadir">Hadir</option>
                                         <option value="sakit">Sakit</option>
                                         <option value="ijin">Ijin</option>
+                                        <option value="ijin">Alpha</option>
                                     </select>
                                 </div>
 

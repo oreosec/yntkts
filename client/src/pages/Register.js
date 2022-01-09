@@ -19,6 +19,7 @@ function Register() {
     const [dropdownValue, setDropdownValue] = useState("role");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPass, setConfirmPass] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -37,10 +38,15 @@ function Register() {
 
         const data = { username, password, role };
 
-        api({ method: "POST", url: `/register`, data }).then((response) => {
-            setDialogText(response.data.message);
+        if (password === confirmPass) {
+            api({ method: "POST", url: `/register`, data }).then((response) => {
+                setDialogText(response.data.message);
+                setIsOpen(true);
+            });
+        } else {
+            setDialogText("Password doesn't match");
             setIsOpen(true);
-        });
+        }
     };
 
     const handleDialog = (e) => {
@@ -90,6 +96,12 @@ function Register() {
                     placeholder="Password"
                     required
                     onChange={(e) => setPassword(e.target.value)}
+                />
+                <Input
+                    type="password"
+                    placeholder="Confirm Password"
+                    required
+                    onChange={(e) => setConfirmPass(e.target.value)}
                 />
                 <Select value={dropdownValue} setValue={setDropdownValue}>
                     <Options value="Koordinator" />

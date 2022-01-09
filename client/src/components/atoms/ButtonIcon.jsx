@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 function ButtonIcon({ className, children, ...props }) {
     return (
         <button className={`btn-icon ${className ? className : ""}`} {...props}>
@@ -6,4 +8,4 @@ function ButtonIcon({ className, children, ...props }) {
     );
 }
 
-export default ButtonIcon;
+export default memo(ButtonIcon);

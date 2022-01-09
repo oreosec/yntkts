@@ -1,6 +1,6 @@
 # GETTING STARTED
 
-### Init
+### Installation
 
 if you're using yarn
 
@@ -14,6 +14,14 @@ If you don't modify any text in documents, so follows these steps:
 
 1. `cd client && yarn start` to starting UI.
 2. `cd server && yarn start` to starting server.
-3. you can pass some default username to login, or you just register one.
+3. you can pass default account to login, or you just register one.
 
-**disclaimer: some pages may not work properly**
+### Default accounts
+
+| Username               | Password | Role        |
+| ---------------------- | -------- | ----------- |
+| Briyan Fajar Syahputra | 123      | Pengampu    |
+| Roup                   | 123      | Koordinator |
+
+**<mark>note: Default accounts won't work if you're not connected to my mongo
+cluster. </mark>**

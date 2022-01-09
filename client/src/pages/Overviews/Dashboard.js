@@ -19,6 +19,7 @@ import Preload from "../../components/molecules/Preload";
 import Layout from "../../components/organism/Layout";
 //icons
 import {
+    BiChevronDown,
     BiMessageRoundedError,
     BiPlus,
     BiUserPlus,
@@ -44,9 +45,11 @@ function Dashboard() {
 
     // sweetalert handler
     const [sweetMsg, setSweetMsg] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     // calendar handler
     const [calendar, setCalendar] = useState(new Date());
+    // dropdown handler
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // add refs moderator
     const [isRefModerator, setIsRefModerator] = useState(false);
@@ -63,35 +66,67 @@ function Dashboard() {
         <Layout>
             <Preload />
             <section className="container">
-                <header className="pt-3">
-                    <h1>Overview</h1>
-                    <span className="font-bold text-sm">
-                        as
-                        <span className="italic ml-2">
-                            {username} {""}
-                            {`(${formatedRole})`}
+                <header className="pt-3 flex flex-col justify-between space-y-2 md:flex-row w-full md:space-y-0">
+                    <div className="md:w-8/12">
+                        <h1>Overview</h1>
+                        <span className="font-bold text-sm">
+                            as
+                            <span className="italic ml-2">
+                                {username} {""}
+                                {`(${formatedRole})`}
+                            </span>
                         </span>
-                    </span>
-                </header>
+                    </div>
 
-                {formatedRole === "Pengampu" && (
-                    <section className="mt-10 flex flex-col space-y-2 w-60">
-                        <ButtonIcon
-                            className="btn btn-primary justify-between"
-                            onClick={() => setIsAddSantri(true)}
-                        >
-                            <span>Add Santri</span>
-                            <BiPlus />
-                        </ButtonIcon>
-                        <ButtonIcon
-                            className="btn btn-primary justify-between"
-                            onClick={() => handleRefModeratorDialog()}
-                        >
-                            <span>Set Koordinator</span>
-                            <BiPlus />
-                        </ButtonIcon>
-                    </section>
-                )}
+                    {formatedRole === "Pengampu" && (
+                        // Menu
+                        <div className="relative flex flex-col mt-2 md:w-4/12 xl:w-2/12">
+                            <div
+                                className="relative btn cursor-pointer w-full bg-white rounded-sm flex items-center justify-between z-[2022]"
+                                onClick={() =>
+                                    setIsDropdownOpen(!isDropdownOpen)
+                                }
+                            >
+                                <p className="font-bold">Options</p>
+                                <BiChevronDown
+                                    className={`
+                                        transition-transform duration-200
+                                        ${
+                                            isDropdownOpen
+                                                ? "rotate-180"
+                                                : "rotate-0"
+                                        }
+                                    `}
+                                />
+                            </div>
+
+                            <div
+                                className={`absolute top-12 rounded overflow-hidden w-full bg-white shadow-2xl transition-all duration-200 z-[2021] ${
+                                    isDropdownOpen ? "flex flex-col" : "hidden"
+                                }`}
+                            >
+                                <button
+                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left rounded border-b"
+                                    onClick={() => setIsAddSantri(true)}
+                                >
+                                    Add Santri
+                                </button>
+                                <button
+                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left rounded border-b"
+                                    onClick={() => handleRefModeratorDialog()}
+                                >
+                                    Set Koordinator
+                                </button>
+                                <button
+                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left rounded border-b"
+                                    // onClick={() => handleRefModeratorDialog()}
+                                >
+                                    Delete Santri
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </header>
 
                 {isRefModerator && (
                     <Backdrop open={isRefModerator}>
@@ -246,7 +281,7 @@ function Dashboard() {
                     </Backdrop>
                 )}
 
-                {isOpen && (
+                {isDialogOpen && (
                     <Sweetalert
                         className="flex justify-between items-center space-x-3"
                         isOpen={true}
@@ -254,14 +289,14 @@ function Dashboard() {
                     >
                         <button
                             className="btn btn-primary"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => setIsDialogOpen(false)}
                         >
                             Oke
                         </button>
                     </Sweetalert>
                 )}
 
-                <main className="mt-10">
+                <main className="relative mt-10">
                     <Calendar date={calendar} setter={setCalendar} />
 
                     <Preload isLoading={objRole.isLoading} />
@@ -335,7 +370,7 @@ function Dashboard() {
             !nama.trim()
         ) {
             setSweetMsg("Yang bener kalo ng-input data.");
-            setIsOpen(true);
+            setIsDialogOpen(true);
             return;
         }
 
@@ -373,20 +408,20 @@ function Dashboard() {
             },
         })
             .then(() => {
-                setIsOpen(true);
+                setIsDialogOpen(true);
                 setSweetMsg("Successfully referencing user.");
 
                 handleRefModeratorDialog();
             })
             .catch(() => {
-                setIsOpen(true);
+                setIsDialogOpen(true);
                 setSweetMsg("This user has already been referenced.");
             });
     }
 
     function handleReports() {
         setSweetMsg("This feature is under development.");
-        setIsOpen(true);
+        setIsDialogOpen(true);
     }
 
     // this function handle my mind

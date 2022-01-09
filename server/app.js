@@ -17,12 +17,7 @@ const app = express();
 //     credentials: true,
 // };
 
-app.use(
-    cors({
-        origin: "http://localhost:3000",
-        credentials: true,
-    })
-);
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 app.set("trust proxy", 1);
 
@@ -65,11 +60,6 @@ const mentorRouter = require("./routes/mentor");
 const discipleRouter = require("./routes/disciple");
 const base = "/api/v1";
 
-app.use("*", (req, res, next) => {
-    console.log({ token: req.session.token });
-    console.log(req.sessionID);
-    next();
-});
 app.use(base, authRouter);
 app.use(base, moderatorRouter);
 app.use(base, mentorRouter);

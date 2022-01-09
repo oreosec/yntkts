@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-// custom hooks
-import useClock from "../../hooks/useClock";
 
 // icons
 import {
@@ -42,10 +40,19 @@ const links = [
     },
 ];
 
+const optionsTime = {
+    hourCycle: "h24",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    day: "2-digit",
+    month: "long",
+    weekday: "long",
+};
+
 function Sidebar() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const clock = useClock();
 
     const { auth } = useSelector((state) => state);
 
@@ -59,8 +66,17 @@ function Sidebar() {
 
     const [isExpand, setIsExpand] = useState(false);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+    const [currentTime, setCurrentTime] = useState("");
 
     const isExpandOpacityStyle = isExpand ? "opacity-100" : "opacity-0";
+
+    useEffect(() => {
+        const time = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString("id-ID", optionsTime));
+        }, 500);
+
+        return () => clearInterval(time);
+    }, []);
 
     return (
         <nav>
@@ -74,8 +90,8 @@ function Sidebar() {
                         <span className="text-xs">Menu</span>
                     </ButtonIcon>
 
-                    <div className="flex space-x-2 text-sm">
-                        <p className="text-white">{clock}</p>
+                    <div className="flex space-x-2 text-sm text-white">
+                        <p>{currentTime}</p>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { Children, isValidElement, cloneElement, useState } from "react";
+import { Children, isValidElement, cloneElement, useState, memo } from "react";
 
 import ButtonIcon from "../atoms/ButtonIcon";
 
@@ -49,4 +49,4 @@ function Select({
     );
 }
 
-export default Select;
+export default memo(Select);

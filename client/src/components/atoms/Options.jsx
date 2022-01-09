@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, memo } from "react";
 
 function Options({ value, setValue, className }) {
     const ref = useRef();
@@ -15,4 +15,4 @@ function Options({ value, setValue, className }) {
     );
 }
 
-export default Options;
+export default memo(Options);
