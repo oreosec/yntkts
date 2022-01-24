@@ -20,8 +20,9 @@ import Layout from "../../components/organism/Layout";
 //icons
 import {
     BiChevronDown,
+    BiEditAlt,
     BiMessageRoundedError,
-    BiPlus,
+    BiTrash,
     BiUserPlus,
     BiXCircle,
 } from "react-icons/bi";
@@ -48,6 +49,7 @@ function Dashboard() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     // calendar handler
     const [calendar, setCalendar] = useState(new Date());
+    const [isPagi, setIsPagi] = useState(true);
     // dropdown handler
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -56,6 +58,7 @@ function Dashboard() {
     const [moderators, setModerators] = useState([]);
 
     // add santri handler
+    const [isEditSantri, setIsEditSantri] = useState(false);
     const [isAddSantri, setIsAddSantri] = useState(false);
     const [nama, setNama] = useState("");
     const [kelas, setKelas] = useState("7");
@@ -66,7 +69,7 @@ function Dashboard() {
         <Layout>
             <Preload />
             <section className="container">
-                <header className="pt-3 flex flex-col justify-between space-y-2 md:flex-row w-full md:space-y-0">
+                <header className="pt-3 flex flex-col justify-between md:items-center space-y-4 md:flex-row w-full md:space-y-0">
                     <div className="md:w-8/12">
                         <h1>Overview</h1>
                         <span className="font-bold text-sm">
@@ -82,7 +85,7 @@ function Dashboard() {
                         // Menu
                         <div className="relative flex flex-col mt-2 md:w-4/12 xl:w-2/12">
                             <div
-                                className="relative btn cursor-pointer w-full bg-white rounded-sm flex items-center justify-between z-[2022]"
+                                className="relative btn cursor-pointer w-full bg-white rounded-sm flex items-center justify-between z-[1]"
                                 onClick={() =>
                                     setIsDropdownOpen(!isDropdownOpen)
                                 }
@@ -101,35 +104,150 @@ function Dashboard() {
                             </div>
 
                             <div
-                                className={`absolute top-12 rounded overflow-hidden w-full bg-white shadow-2xl transition-all duration-200 z-[2021] ${
+                                className={`absolute top-12 rounded overflow-hidden w-full bg-white shadow-2xl transition-all duration-200 z-[1] ${
                                     isDropdownOpen ? "flex flex-col" : "hidden"
                                 }`}
                             >
                                 <button
-                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left rounded border-b"
+                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left border-b"
                                     onClick={() => setIsAddSantri(true)}
                                 >
                                     Add Santri
                                 </button>
                                 <button
-                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left rounded border-b"
+                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left border-b"
                                     onClick={() => handleRefModeratorDialog()}
                                 >
                                     Set Koordinator
                                 </button>
                                 <button
-                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left rounded border-b"
-                                    // onClick={() => handleRefModeratorDialog()}
+                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left border-b"
+                                    onClick={() =>
+                                        setIsEditSantri(!isEditSantri)
+                                    }
                                 >
-                                    Delete Santri
+                                    Edit Santri
                                 </button>
                             </div>
                         </div>
                     )}
                 </header>
 
+                <Preload isLoading={objRole.isLoading} />
+
+                <main className="relative mt-4 md:mt-10">
+                    <Calendar date={calendar} setter={setCalendar} />
+
+                    <div className="flex space-x-2 my-2">
+                        <button
+                            className={`btn borde rounded font-bold w-full md:w-60 transition-colors duration-300 ${
+                                isPagi
+                                    ? "bg-sky-500 text-white border-sky-500"
+                                    : "bg-white text-gray-800 border-white"
+                            }`}
+                            onClick={() => setIsPagi(true)}
+                        >
+                            Pagi
+                        </button>
+                        <button
+                            className={`btn border rounded font-bold w-full md:w-60 transition-colors duration-300 ${
+                                isPagi
+                                    ? "bg-white text-gray-800 border-white"
+                                    : "bg-sky-500 text-white border-sky-500"
+                            }`}
+                            onClick={() => setIsPagi(false)}
+                        >
+                            Sore
+                        </button>
+                    </div>
+
+                    {!objRole.isLoading &&
+                    !objRole.isError &&
+                    objRole.data.length >= 1 ? (
+                        <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {
+                                //
+                                objRole.data.map(
+                                    ({ _id, username, presences }) => (
+                                        <Card
+                                            key={_id}
+                                            className="bg-white cursor-pointer"
+                                        >
+                                            <div className="flex items-center">
+                                                <Status
+                                                    className={
+                                                        handleFusingFusing(
+                                                            presences,
+                                                            calendar
+                                                        ) === "hadir"
+                                                            ? "bg-success"
+                                                            : handleFusingFusing(
+                                                                  presences,
+                                                                  calendar
+                                                              ) === "idle"
+                                                            ? "bg-disabled"
+                                                            : "bg-danger"
+                                                    }
+                                                />
+                                                <span className="font-bold ml-2">
+                                                    {username}
+                                                </span>
+                                                {isEditSantri ? (
+                                                    <div className="flex ml-auto space-x-4">
+                                                        <div
+                                                            className="group relative"
+                                                            onClick={() =>
+                                                                handleReports()
+                                                            }
+                                                        >
+                                                            <BiEditAlt className="transition-colors duration-150 hover:text-red-500 cursor-pointer" />
+                                                            <div className="absolute text-xs z-[2021] bg-trueGray-800 text-white font-light rounded p-1 transition-transform duration-150 scale-0 group-hover:scale-100">
+                                                                {" "}
+                                                                Edit
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className="group relative"
+                                                            onClick={() =>
+                                                                handleReports()
+                                                            }
+                                                        >
+                                                            <BiTrash className="transition-colors duration-150 hover:text-red-500 cursor-pointer" />
+                                                            <div className="absolute text-xs z-[2021] bg-trueGray-800 text-white font-light rounded p-1 transition-transform duration-150 scale-0 group-hover:scale-100">
+                                                                {" "}
+                                                                Delete
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div
+                                                        className="group relative ml-auto"
+                                                        onClick={() =>
+                                                            handleReports()
+                                                        }
+                                                    >
+                                                        <BiMessageRoundedError className="transition-colors duration-150 hover:text-red-500 cursor-pointer" />
+                                                        <div className="absolute text-xs z-[2021] bg-trueGray-800 text-white font-light rounded p-1 transition-transform duration-150 scale-0 group-hover:scale-100">
+                                                            {" "}
+                                                            Report
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Card>
+                                    )
+                                )
+                            }
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-96 text-trueGray-600 opacity-50">
+                            <p className="font-bold text-xl"> No data found.</p>
+                        </div>
+                    )}
+                </main>
+
                 {isRefModerator && (
-                    <Backdrop open={isRefModerator}>
+                    <Backdrop>
                         <Card className="bg-white p-4 w-11/12 md:w-[300px] relative">
                             <div
                                 className="absolute -top-5 right-0"
@@ -177,7 +295,7 @@ function Dashboard() {
                 )}
 
                 {isAddSantri && (
-                    <Backdrop open={isAddSantri}>
+                    <Backdrop>
                         <Card className="bg-white w-11/12 md:w-96 relative">
                             <div
                                 className="absolute -top-5 right-0"
@@ -295,72 +413,12 @@ function Dashboard() {
                         </button>
                     </Sweetalert>
                 )}
-
-                <main className="relative mt-10">
-                    <Calendar date={calendar} setter={setCalendar} />
-
-                    <Preload isLoading={objRole.isLoading} />
-
-                    {!objRole.isLoading &&
-                    !objRole.isError &&
-                    objRole.data.length >= 1 ? (
-                        <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                            {
-                                //
-                                objRole.data.map(
-                                    ({ _id, username, presences }) => (
-                                        <Card
-                                            key={_id}
-                                            className="bg-white cursor-pointer"
-                                        >
-                                            <div className="flex items-center">
-                                                <Status
-                                                    className={
-                                                        handleFusingFusing(
-                                                            presences,
-                                                            calendar
-                                                        ) === "hadir"
-                                                            ? "bg-success"
-                                                            : handleFusingFusing(
-                                                                  presences,
-                                                                  calendar
-                                                              ) === "idle"
-                                                            ? "bg-disabled"
-                                                            : "bg-danger"
-                                                    }
-                                                />
-                                                <span className="font-bold ml-2">
-                                                    {username}
-                                                </span>
-                                                <div
-                                                    className="group relative ml-auto"
-                                                    onClick={() =>
-                                                        handleReports()
-                                                    }
-                                                >
-                                                    <BiMessageRoundedError className="transition-colors duration-150 hover:text-red-500 cursor-pointer" />
-                                                    <div className="absolute text-xs z-[2021] bg-trueGray-800 text-white font-light rounded p-1 transition-transform duration-150 scale-0 group-hover:scale-100">
-                                                        {" "}
-                                                        Report
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Card>
-                                    )
-                                )
-                            }
-                        </div>
-                    ) : (
-                        <div className="flex items-center justify-center h-96 text-trueGray-600 opacity-50">
-                            <p className="font-bold text-xl"> No data found.</p>
-                        </div>
-                    )}
-                </main>
             </section>
         </Layout>
     );
 
     // functions
+    // ===== Santri =====
     function handleAddSantri(mentorId) {
         const formatedKelas = `${kelas} ${division}`;
 
@@ -385,6 +443,12 @@ function Dashboard() {
             },
         }).then(() => dispatch(fetchMentor(mentorId, "expand=true")));
     }
+
+    // function handleEditSantri(){
+
+    // }
+
+    // ===== santri end =====
 
     function handleRefModeratorDialog() {
         api({

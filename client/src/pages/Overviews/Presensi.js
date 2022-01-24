@@ -7,44 +7,35 @@ import Preload from "../../components/molecules/Preload";
 import Layout from "../../components/organism/Layout";
 import Calendar from "../../components/molecules/Calendar";
 
+// custom vars
+const select_options = [{key: "Hadir", value: "hadir"}, {key: "Sakit", value: "sakit"}, {key: "Ijin", value: "ijin"}, {key: "Alpha", value: "alpha"}];
+
 function Presensi() {
     const { objRole } = useContext(RoleContext);
     const [calendar, setCalendar] = useState(new Date());
-    const [presences, setPresences] = useState([
-        { date: calendar, status: "", description: "" },
+    const [isPagi, setIsPagi] = useState(true);
+    const [formatedObj, setFromatedObj] = useState([
+        { name: "", presence: { date: calendar.toISOString(), status: "", description: "" } },
     ]);
 
     const condition =
         !objRole.isLoading && !objRole.isError && objRole.data.length;
 
-    const handleInputValue = (i, v) => {
-        setPresences((prev) => {
-            let current;
-        });
-    };
-
     // this is one of problems that make my head "mumet"
     useEffect(() => {
         if (condition) {
-            //
-            // const current = objRole.data.filter((data) => data);
+            const formatData = objRole.data.map(
+                ({ username, presences }) => {
+                    // const {date, status, description} = objFormatter(presences, calendar, isPagi)
 
-            const current = objRole.data.map(({ _id, presences }) => ({
-                presences: presences.map(
-                    ({ date, status }) => `${_id} ${date} ${status}` // this wont detect because calendar.getHours() is not at the same time
-                ),
-            }));
+                    // return {username, presence: {date, status, description}}
+                    return objFormatter(username, presences, calendar, isPagi)
+                }
+            );
 
-            const p = current.map(({ presences }) => presences);
-            console.log(p);
-
-            // setPresences(() => {
-            //     const p = current.map(() =>  )
-
-            //     return newState;
-            // });
+            setFromatedObj(formatData)
         }
-    }, [condition, calendar, objRole.data]);
+    }, [condition, calendar, objRole.data, isPagi]);
 
     return (
         <Layout>
@@ -64,11 +55,36 @@ function Presensi() {
 
                 <main className="pt-1 pb-2 space-y-3">
                     <Preload isLoading={objRole.isLoading} />
+
+                    <div className="flex space-x-2 my-2">
+                        <button
+                            className={`btn borde rounded font-bold w-full md:w-60 transition-colors duration-300 ${
+                                isPagi
+                                    ? "bg-sky-500 text-white border-sky-500"
+                                    : "bg-white text-gray-800 border-white"
+                            }`}
+                            onClick={() => setIsPagi(true)}
+                        >
+                            Pagi
+                        </button>
+                        <button
+                            className={`btn border rounded font-bold w-full md:w-60 transition-colors duration-300 ${
+                                isPagi
+                                    ? "bg-white text-gray-800 border-white"
+                                    : "bg-sky-500 text-white border-sky-500"
+                            }`}
+                            onClick={() => setIsPagi(false)}
+                        >
+                            Sore
+                        </button>
+                    </div>
+
                     {condition ? (
-                        objRole.data.map(({ username, _id }, index) => (
+                        formatedObj.map(({ username, presence }, index) => (
+                            // objRole.data.map(({username, _id}) => (
                             <div
-                                className="relative w-11/12 bg-gray-800 text-white p-3"
-                                key={_id}
+                                className="relative bg-gray-800 text-white p-3"
+                                key={index}
                             >
                                 <div className="flex items-center py-1 justify-between">
                                     <p className="border-white border-b">
@@ -79,17 +95,18 @@ function Presensi() {
                                         id="presensi"
                                         className="text-gray-800"
                                     >
-                                        <option value="hadir">Hadir</option>
-                                        <option value="sakit">Sakit</option>
-                                        <option value="ijin">Ijin</option>
-                                        <option value="ijin">Alpha</option>
+                                        {/* {
+                                            select_options.map(({key, value}) => (
+                                                presence.status === ""? 
+                                                <option key={key} value={value}>{key}</option>
+                                            ))
+                                        } */}
                                     </select>
                                 </div>
 
                                 <div className="py-3">
                                     <Input placeholder="Tambah keterangan jika tidak hadir (opsional)" />
                                 </div>
-                                <p>{index}</p>
                             </div>
                         ))
                     ) : //
@@ -107,6 +124,68 @@ function Presensi() {
             </section>
         </Layout>
     );
+}
+
+function setTime(date, to = true) {
+    if (typeof to !== "boolean") {
+        return "Seccond argument type must be a boolean.";
+    }
+
+    if (to) {
+        date.setHours(6);
+        return date;
+    } else {
+        date.setHours(17);
+        return date;
+    }
+}
+
+// handle compare date
+// handle formatedObj state
+function objFormatter(username, presences, comparter, pagi) {
+    let result;
+
+    if (!Array.isArray(presences)) {
+        return "Argument must be an array.";
+    }
+
+    if (!comparter instanceof Date) {
+        return "Second argument must be a Date.";
+    }
+
+    for(let i = 0; i < presences.length; i++){
+        const {date, status, description} = presences[i];
+        const curr_dt = new Date(date);
+        
+        
+        const isDateEq = 
+        curr_dt.getFullYear() === comparter.getFullYear() &&
+        curr_dt.getMonth() === comparter.getMonth() &&
+        curr_dt.getDate() === comparter.getDate();
+        
+        if(isDateEq) {
+            if (pagi && curr_dt.getHours() <= 6 && curr_dt.getHours() >= 4) {
+                result = {username, presence: {date, status, description}}
+                return result;
+            }
+            
+            if (!pagi && curr_dt.getHours() <= 15 && curr_dt.getHours() >= 17) {
+                result = {username, presence: {date, status, description}}
+                return result
+            }
+        }
+    }
+    
+    if(!result){
+        return {
+            username,
+            presence: {
+                date: comparter.toISOString(),
+                status: "alpha",
+                description: ''
+            }
+        };
+    }
 }
 
 export default Presensi;

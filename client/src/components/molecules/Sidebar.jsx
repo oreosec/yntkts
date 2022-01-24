@@ -188,7 +188,9 @@ function Sidebar() {
             </div>
             <div
                 className={`fixed w-32 max-h-full bg-gray-800 shadow-md rounded bg-opacity-40 backdrop-blur-sm text-sm z-[2022] ${
-                    isTooltipOpen ? "bottom-4 scale-100" : "-bottom-60 scale-0"
+                    isTooltipOpen && isExpand
+                        ? "bottom-4 scale-100"
+                        : "-bottom-60 scale-0"
                 } ${
                     isExpand ? "left-32" : "left-16"
                 } transition-all duration-300`}
@@ -226,14 +228,6 @@ function Sidebar() {
             </div>
         </nav>
     );
-
-    // get current time formated 24 hours
-    function getCurrentTime() {
-        return setTimeout(
-            () => new Date().toLocaleTimeString("id-ID", { hour12: false }),
-            1000
-        );
-    }
 }
 
 export default Sidebar;

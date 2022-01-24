@@ -14,18 +14,20 @@ function Details() {
 
     return (
         <Layout>
-            <Sweetalert
-                className="flex justify-between items-center space-x-3"
-                isOpen={isOpen}
-                message="this feature is under development"
-            >
-                <button
-                    className="btn btn-primary"
-                    onClick={() => setIsOpen(false)}
+            {isOpen && (
+                <Sweetalert
+                    className="flex justify-between items-center space-x-3"
+                    isOpen={isOpen}
+                    message="this feature is under development"
                 >
-                    Oke
-                </button>
-            </Sweetalert>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        Oke
+                    </button>
+                </Sweetalert>
+            )}
             <div className="container">
                 <header className="text-center py-10">
                     <h3>{as.username}</h3>

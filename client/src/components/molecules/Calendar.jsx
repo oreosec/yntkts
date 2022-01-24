@@ -23,6 +23,14 @@ function Calendar({ date = new Date(), setter }) {
         handlePrevButton,
     } = useCalendar(date);
 
+    // when you change the date, time will automatically set to 00:00:00
+    // and this function below will handle time every selected date
+    // this will set time to current time, not reset time to 00:00:00
+    // ------------- example -------------------
+    // current date is Sun 23 Jan 2022. 09:42:50
+    // then you change the date to Mon 24 Jan 2022.
+    //      automatically the date will reset to 00:00:00
+    //      so it'll become Mon 24 Jan 2022. 00:00:00, instead of Mon 24 Jan 2022. 09:42:50
     function handleCalendarOnClick(selected) {
         const current = new Date(selected);
 
