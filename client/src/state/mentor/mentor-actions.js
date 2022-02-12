@@ -4,7 +4,7 @@ import {
     GET_MENTOR_FAILURE,
 } from "./mentor-types";
 
-import { api } from "../../utils/axios/apiClient";
+import { api } from "../../config/axios/apiClient";
 
 // fetch all mentors
 export const fetchMentors = () => {

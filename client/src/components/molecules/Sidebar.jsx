@@ -21,6 +21,10 @@ import { IoSettings } from "react-icons/io5";
 import ButtonIcon from "../atoms/ButtonIcon";
 import { logout } from "../../state/auth/auth-services";
 
+// lib / util
+import "../../lib/_locale";
+import dayjs from "dayjs";
+
 // navigations
 const links = [
     {
@@ -39,16 +43,6 @@ const links = [
         Icon: BiBarChart,
     },
 ];
-
-const optionsTime = {
-    hourCycle: "h24",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    day: "2-digit",
-    month: "long",
-    weekday: "long",
-};
 
 function Sidebar() {
     const navigate = useNavigate();
@@ -72,7 +66,7 @@ function Sidebar() {
 
     useEffect(() => {
         const time = setInterval(() => {
-            setCurrentTime(new Date().toLocaleString("id-ID", optionsTime));
+            setCurrentTime(dayjs().format('dddd, HH:mm:ss |  DD MMMM YYYY'));
         }, 500);
 
         return () => clearInterval(time);

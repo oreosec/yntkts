@@ -8,7 +8,7 @@ import Select from "../components/molecules/Select";
 import Options from "../components/atoms/Options";
 
 import { BiUserPlus, BiArrowBack } from "react-icons/bi";
-import { api } from "../utils/axios/apiClient";
+import { api } from "../config/axios/apiClient";
 import Sweetalert from "../components/molecules/Sweetalert";
 
 function Register() {

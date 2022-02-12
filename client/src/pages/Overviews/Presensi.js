@@ -1,191 +1,279 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { RoleContext } from "../../context/role-context";
 
 import Input from "../../components/atoms/Input";
 import Preload from "../../components/molecules/Preload";
-import Layout from "../../components/organism/Layout";
 import Calendar from "../../components/molecules/Calendar";
+import Sweetalert from "../../components/molecules/Sweetalert";
+import Card from "../../components/molecules/Card";
+import Layout from "../../components/organism/Layout";
+
+//utils | lib
+import "../../lib/_locale";
+import dayjs from "dayjs";
+import { api } from "../../config/axios/apiClient";
 
 // custom vars
-const select_options = [{key: "Hadir", value: "hadir"}, {key: "Sakit", value: "sakit"}, {key: "Ijin", value: "ijin"}, {key: "Alpha", value: "alpha"}];
+const select_options = [
+	{ key: "Hadir", value: "hadir" },
+	{ key: "Sakit", value: "sakit" },
+	{ key: "Ijin", value: "ijin" },
+	{ key: "Alpha", value: "alpha" },
+];
 
 function Presensi() {
-    const { objRole } = useContext(RoleContext);
-    const [calendar, setCalendar] = useState(new Date());
-    const [isPagi, setIsPagi] = useState(true);
-    const [formatedObj, setFromatedObj] = useState([
-        { name: "", presence: { date: calendar.toISOString(), status: "", description: "" } },
-    ]);
+	const dispatch = useDispatch();
+	const { auth, mentor, moderator } = useSelector((state) => state);
 
-    const condition =
-        !objRole.isLoading && !objRole.isError && objRole.data.length;
+	const { content } = useContext(RoleContext);
+	const [isPagi, setIsPagi] = useState(true);
+	const [calendar, setCalendar] = useState(
+		dayjs().hour(6).minute(0).second(0).millisecond(0).toDate()
+	);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [data, setData] = useState(content.data);
 
-    // this is one of problems that make my head "mumet"
-    useEffect(() => {
-        if (condition) {
-            const formatData = objRole.data.map(
-                ({ username, presences }) => {
-                    // const {date, status, description} = objFormatter(presences, calendar, isPagi)
+	const condition =
+		!content.isLoading && !content.isError && content.data.length;
 
-                    // return {username, presence: {date, status, description}}
-                    return objFormatter(username, presences, calendar, isPagi)
-                }
-            );
+	console.log(getIndexOf(data, calendar))
 
-            setFromatedObj(formatData)
-        }
-    }, [condition, calendar, objRole.data, isPagi]);
+	const handleSubmission = () => {
+		const validRole = ["koordinator", "pengampu"];
 
-    return (
-        <Layout>
-            <section className="container">
-                <header className="py-2">
-                    <h1>Presence</h1>
+		return api({
+			method: "PATCH",
+			url: `/mentor/${auth.as._id}`,
+			data,
+		})
+			.then((res) => console.log(res))
+			.catch((err) => console.log(err));
+	};
 
-                    <div className="my-4">
-                        <Calendar date={calendar} setter={setCalendar} />
+	return (
+		<Layout>
+			<Preload isLoading={content.isLoading} />
+			{isDialogOpen && (
+				<Sweetalert
+					isOpen={isDialogOpen}
+					message="Are you sure?"
+					className="space-y-4">
+					<p>
+						You're about to update this content. It may make a
+						change for your content
+					</p>
+					<div className="text-right space-x-2">
+						<button
+							className="btn btn-primary"
+							onClick={() => handleSubmission()}>
+							Sure
+						</button>
+						<button
+							className="btn border-sky-500 border rounded"
+							onClick={() => setIsDialogOpen(false)}>
+							Nope
+						</button>
+					</div>
+				</Sweetalert>
+			)}
+			<section className="container">
+				<header className="py-2">
+					<h1>Presence</h1>
 
-                        <div className="my-4 space-y-2">
-                            <p className="text-sm">{`${calendar.getDate()}/${calendar.getMonth()}/${calendar.getFullYear()}`}</p>
-                            <p className="text-sm font-bold">Pagi</p>
-                        </div>
-                    </div>
-                </header>
+					<div className="my-4">
+						<Calendar date={calendar} setter={setCalendar} />
+					</div>
+				</header>
 
-                <main className="pt-1 pb-2 space-y-3">
-                    <Preload isLoading={objRole.isLoading} />
+				<main className="pt-1 pb-2 space-y-3">
+					<div className="flex space-x-2 my-2">
+						<button
+							className={`btn borde rounded font-bold w-full md:w-60 transition-colors duration-300 ${
+								isPagi
+									? "bg-sky-500 text-white border-sky-500"
+									: "bg-white text-gray-800 border-white"
+							}`}
+							onClick={() => setIsPagi(true)}>
+							Pagi
+						</button>
+						<button
+							className={`btn border rounded font-bold w-full md:w-60 transition-colors duration-300 ${
+								isPagi
+									? "bg-white text-gray-800 border-white"
+									: "bg-sky-500 text-white border-sky-500"
+							}`}
+							onClick={() => setIsPagi(false)}>
+							Sore
+						</button>
+					</div>
 
-                    <div className="flex space-x-2 my-2">
-                        <button
-                            className={`btn borde rounded font-bold w-full md:w-60 transition-colors duration-300 ${
-                                isPagi
-                                    ? "bg-sky-500 text-white border-sky-500"
-                                    : "bg-white text-gray-800 border-white"
-                            }`}
-                            onClick={() => setIsPagi(true)}
-                        >
-                            Pagi
-                        </button>
-                        <button
-                            className={`btn border rounded font-bold w-full md:w-60 transition-colors duration-300 ${
-                                isPagi
-                                    ? "bg-white text-gray-800 border-white"
-                                    : "bg-sky-500 text-white border-sky-500"
-                            }`}
-                            onClick={() => setIsPagi(false)}
-                        >
-                            Sore
-                        </button>
-                    </div>
+					{content.data.map(({ username, presences }, index) => {
+						const current = mapData(presences, calendar, isPagi);
+						console.log(current);
 
-                    {condition ? (
-                        formatedObj.map(({ username, presence }, index) => (
-                            // objRole.data.map(({username, _id}) => (
-                            <div
-                                className="relative bg-gray-800 text-white p-3"
-                                key={index}
-                            >
-                                <div className="flex items-center py-1 justify-between">
-                                    <p className="border-white border-b">
-                                        {username}
-                                    </p>
-                                    <select
-                                        name="presensi"
-                                        id="presensi"
-                                        className="text-gray-800"
-                                    >
-                                        {/* {
-                                            select_options.map(({key, value}) => (
-                                                presence.status === ""? 
-                                                <option key={key} value={value}>{key}</option>
-                                            ))
-                                        } */}
-                                    </select>
-                                </div>
+						return (
+							<Card
+								className="relative bg-gray-800 text-white"
+								key={index}>
+								<div className="flex items-center py-1 justify-between">
+									<p className="border-white border-b font-bold">
+										{username}
+									</p>
+									<select
+										name="presensi"
+										id="presensi"
+										className="text-gray-800"
+										defaultValue={current.status.toLowerCase()}
+										onChange={(evt) =>
+											handlePresenceSelect(
+												evt,
+												setData,
+												index,
+												calendar
+											)
+										}>
+										{select_options.map(
+											({ key, value }) => (
+												<option key={key} value={value}>
+													{key}
+												</option>
+											)
+										)}
+									</select>
+								</div>
+								<Input
+									size="text-sm"
+									placeholder="Tambahkan keterangan jika tidak hadir (optional)."
+									defaultValue={
+										current.description
+									}
+								/>
+							</Card>
+						);
+					})}
 
-                                <div className="py-3">
-                                    <Input placeholder="Tambah keterangan jika tidak hadir (opsional)" />
-                                </div>
-                            </div>
-                        ))
-                    ) : //
-                    !condition ? (
-                        <p className="text-trueGray-600 opacity-50 text-center font-bold">
-                            No data found.
-                        </p>
-                    ) : null}
-                    {condition && (
-                        <div className="w-11/12 text-right">
-                            <button className="btn btn-primary">Submit</button>
-                        </div>
-                    )}
-                </main>
-            </section>
-        </Layout>
-    );
+					{
+					// !condition ? (
+					// 	<p className="text-trueGray-600 opacity-50 text-center font-bold">
+					// 		No data found.
+					// 	</p>
+					// ) : null}
+					// <ButtonSubmit
+					// 	handler={setIsDialogOpen} //isDisabled={handleDisabledButton(calendar.getHours())}
+					// />
+					}
+				</main>
+			</section>
+		</Layout>
+	);
 }
 
-function setTime(date, to = true) {
-    if (typeof to !== "boolean") {
-        return "Seccond argument type must be a boolean.";
-    }
+// component
+function ButtonSubmit({ handler, isDisabled, ...props }) {
+	return (
+		<div className="text-right">
+			<button
+				className="btn btn-primary disabled:bg-sky-900 disabled:bg-opacity-50 disabled:cursor-not-allowed"
+				onClick={() => handler(true)}
+				disabled={isDisabled || false}
+				{...props}>
+				Submit
+			</button>
+		</div>
+	);
+}
+// end of component
 
-    if (to) {
-        date.setHours(6);
-        return date;
-    } else {
-        date.setHours(17);
-        return date;
-    }
+function mapData(obj, comparter, isPagi) {
+	const _comparter = dayjs(comparter).format("YYYY-MM-DDTH").split("T");
+
+	const x = obj.filter(({ date }, i) => {
+		const _format = dayjs(date).format("YYYY-MM-DDTH");
+		const _date = _format.split("T");
+
+		const _match = _date[0] === _comparter[0];
+		const _dawn = _date[1] >= 4 && _date[1] <= 6;
+		const _dusk = _date[1] >= 15 && _date[1] <= 17;
+
+		if (_match) {
+			if (isPagi && _dawn) {
+				return obj[i];
+			}
+
+			if (!isPagi && _dusk) {
+				return obj[i];
+			}
+		}
+
+		return null;
+	});
+
+	if (x.length < 1) {
+		return {
+			date: dayjs(comparter).toISOString(),
+			status: "Alpha",
+			description: "",
+		};
+	}
+
+	return x[0];
 }
 
-// handle compare date
-// handle formatedObj state
-function objFormatter(username, presences, comparter, pagi) {
-    let result;
+function handleDisabledButton(currentTime) {
+	if (
+		(currentTime >= 4 && currentTime <= 6) ||
+		(currentTime >= 15 && currentTime <= 17)
+	) {
+		return false;
+	}
 
-    if (!Array.isArray(presences)) {
-        return "Argument must be an array.";
-    }
+	return true;
+}
 
-    if (!comparter instanceof Date) {
-        return "Second argument must be a Date.";
-    }
+function handlePresenceSelect(evt, setState, index, date) {
+	const { value } = evt.target;
 
-    for(let i = 0; i < presences.length; i++){
-        const {date, status, description} = presences[i];
-        const curr_dt = new Date(date);
-        
-        
-        const isDateEq = 
-        curr_dt.getFullYear() === comparter.getFullYear() &&
-        curr_dt.getMonth() === comparter.getMonth() &&
-        curr_dt.getDate() === comparter.getDate();
-        
-        if(isDateEq) {
-            if (pagi && curr_dt.getHours() <= 6 && curr_dt.getHours() >= 4) {
-                result = {username, presence: {date, status, description}}
-                return result;
-            }
-            
-            if (!pagi && curr_dt.getHours() <= 15 && curr_dt.getHours() >= 17) {
-                result = {username, presence: {date, status, description}}
-                return result
-            }
-        }
-    }
-    
-    if(!result){
-        return {
-            username,
-            presence: {
-                date: comparter.toISOString(),
-                status: "alpha",
-                description: ''
-            }
-        };
-    }
+	setState((prevState) => [
+		...prevState.slice(0, index),
+		{
+			...prevState[index],
+			presences: [
+				...prevState[index]["presences"].slice(0, getIndexOf(prevState[index]["presences"], date)),
+			],
+		},
+		...prevState.slice(index + 1),
+	]);
+}
+
+function handleDescriptionChange(evt, setState, index) {
+	const { value } = evt.target;
+
+	setState((prevState) => [
+		...prevState.slice(0, index),
+		{
+			...prevState[index],
+			presence: {
+				...prevState[index]["presence"],
+				description: value,
+			},
+		},
+		...prevState.slice(index + 1),
+	]);
+}
+
+function getIndexOf(n, m){
+	if(!dayjs.isDayjs(m)){
+		return;
+	}
+
+	const _index = n.find(({date}, index, self) => {
+		const _convertDate = dayjs(date);
+		return date
+	})
+
+	return _index
 }
 
 export default Presensi;

@@ -10,18 +10,18 @@ function RoleProvider({ children }) {
         moderator,
     } = useSelector((state) => state);
     const [formatedRole, setFormatedRole] = useState(null);
-    const [objRole, setObjRole] = useState(null);
+    const [content, setContent] = useState(null);
 
     // function
     const handleSetState = useCallback(() => {
         if (loggedIn) {
             if (as.role === "moderator") {
-                setObjRole(moderator);
+                setContent(moderator);
                 return setFormatedRole("Koordinator");
             }
 
             if (as.role === "mentor") {
-                setObjRole(mentor);
+                setContent(mentor);
                 return setFormatedRole("Pengampu");
             }
         }
@@ -32,7 +32,7 @@ function RoleProvider({ children }) {
     }, [handleSetState]);
 
     return (
-        <RoleContext.Provider value={{ formatedRole, objRole }}>
+        <RoleContext.Provider value={{ formatedRole, content, setContent }}>
             {children}
         </RoleContext.Provider>
     );

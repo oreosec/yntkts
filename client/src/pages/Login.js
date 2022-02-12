@@ -49,18 +49,20 @@ function Login() {
                     </ButtonIcon>
                 </Sweetalert>
             )}
-            <div className="w-10/12 sm:w-6/12 lg:w-[30rem] shadow-md rounded p-8 bg-gray-800">
+            <div className="w-11/12 sm:w-6/12 lg:w-[30rem] shadow-md rounded p-6 sm:p-8 bg-gray-800">
                 <h1 className="text-3xl mb-3 text-white">Login</h1>
                 <form className="space-y-3" onSubmit={(e) => handleLogin(e)}>
                     <Input
                         type="text"
                         placeholder="Username"
+                        size="text-xs sm:text-sm"
                         required
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     <Input
                         type="password"
                         placeholder="Password"
+                        size="text-xs sm:text-sm"
                         required
                         onChange={(e) => setPassword(e.target.value)}
                     />
@@ -69,7 +71,7 @@ function Login() {
                             <span className="mt-[0.15rem]">
                                 <BiLogInCircle />
                             </span>
-                            <span className="text-sm ml-1">Login</span>
+                            <span className="text-xs sm:text-sm ml-1">Login</span>
                         </ButtonIcon>
                         <ButtonIcon
                             className="btn btn-outline-primary flex items-center"
@@ -78,7 +80,7 @@ function Login() {
                             <span className="mt-[0.15rem]">
                                 <BiUserPlus />
                             </span>
-                            <span className="text-sm ml-1">Register</span>
+                            <span className="text-xs sm:text-sm ml-1">Register</span>
                         </ButtonIcon>
                     </div>
                 </form>

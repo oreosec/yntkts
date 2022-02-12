@@ -95,4 +95,12 @@ module.exports = {
             });
         }
     },
+
+    // Patch
+    patchMentorDisciples: async(req, res) => {
+        const {id} = req.params;
+
+        Mentor.findOneAndUpdate({_id: id}, {})
+        res.json({message: id})
+    }
 };

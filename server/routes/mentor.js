@@ -4,6 +4,7 @@ const {
     getMentors,
     getSpecificMentor,
     bindMentorAndModerator,
+    patchMentorDisciples,
 } = require("../controller/mentor.cont");
 
 // middleware
@@ -18,5 +19,6 @@ router.get("/mentors", sessionsValidate, getMentors);
 router.get("/mentors/:mentorId", sessionsValidate, getSpecificMentor);
 
 router.patch("/ref/mentors", sessionsValidate, bindMentorAndModerator);
+router.patch("/mentor/:id", patchMentorDisciples)
 
 module.exports = router;

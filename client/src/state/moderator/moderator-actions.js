@@ -1,4 +1,4 @@
-import { api } from "../../utils/axios/apiClient";
+import { api } from "../../config/axios/apiClient";
 import {
     GET_MODERATOR_FAILURE,
     GET_MODERATOR_REQUEST,

@@ -1,4 +1,4 @@
-import { api } from "../../utils/axios/apiClient";
+import { api } from "../../config/axios/apiClient";
 import jwtDecode from "jwt-decode";
 import {
     LOGIN_ERROR,
@@ -73,6 +73,7 @@ export const login = (method = "POST", payload) => {
                             "Sessions or Cookies are not found"
                         );
                         error.status = 401;
+                        console.log(error)
                         throw error;
                     }
                 })

@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 // routes
-import { routes } from "./utils/routes/routes";
+import { routes } from "./config/routes/routes"
 
 //utils
 import { fetchMentor } from "./state/mentor/mentor-actions";

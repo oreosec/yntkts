@@ -28,7 +28,7 @@ import {
 } from "react-icons/bi";
 
 //utils
-import { api } from "../../utils/axios/apiClient";
+import { api } from "../../config/axios/apiClient";
 
 import { fetchMentor } from "../../state/mentor/mentor-actions";
 import { RoleContext } from "../../context/role-context";
@@ -42,7 +42,7 @@ function Dashboard() {
     const { auth } = useSelector((state) => state);
     const { username, _id: mentor_id } = auth.as;
     const dispatch = useDispatch();
-    const { formatedRole, objRole } = useContext(RoleContext);
+    const { formatedRole, content } = useContext(RoleContext);
 
     // sweetalert handler
     const [sweetMsg, setSweetMsg] = useState("");
@@ -121,7 +121,7 @@ function Dashboard() {
                                     Set Koordinator
                                 </button>
                                 <button
-                                    className="btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left border-b"
+                                    className={`btn transition-colors duration-300 hover:bg-sky-600 hover:text-white text-left border-b ${isEditSantri ? "bg-sky-600 text-white" : "bg-white"}`}
                                     onClick={() =>
                                         setIsEditSantri(!isEditSantri)
                                     }
@@ -133,7 +133,7 @@ function Dashboard() {
                     )}
                 </header>
 
-                <Preload isLoading={objRole.isLoading} />
+                <Preload isLoading={content.isLoading} />
 
                 <main className="relative mt-4 md:mt-10">
                     <Calendar date={calendar} setter={setCalendar} />
@@ -161,13 +161,13 @@ function Dashboard() {
                         </button>
                     </div>
 
-                    {!objRole.isLoading &&
-                    !objRole.isError &&
-                    objRole.data.length >= 1 ? (
+                    {!content.isLoading &&
+                    !content.isError &&
+                    content.data.length >= 1 ? (
                         <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                             {
                                 //
-                                objRole.data.map(
+                                content.data.map(
                                     ({ _id, username, presences }) => (
                                         <Card
                                             key={_id}
@@ -492,8 +492,7 @@ function Dashboard() {
     // its prevent me from "mumet"
     function handleFusingFusing(
         presences,
-        date,
-        response = ["_id", "date", "status"]
+        date
     ) {
         // this function except array as its parameter
         // presences param should be array of object
@@ -526,15 +525,6 @@ function Dashboard() {
         if (y.length < 1) {
             return "idle";
         }
-
-        if (!Array.isArray(response)) {
-            return;
-        }
-
-        const obj = response.reduce((acc, curr) => {
-            acc[curr] = "";
-            return acc;
-        }, {});
 
         return y[0].status;
     }
